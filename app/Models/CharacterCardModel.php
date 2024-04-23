@@ -19,9 +19,8 @@ class CharacterCardModel extends Model
     protected $useSoftDeletes = false;
 
     protected $validationRules = [
-        'name' => 'required|unique|max_length[255]',
+        'name' => 'required|max_length[255]',
         'description' => 'required|max_length[255]',
-        'content' => 'required'
     ];
 
     protected $validationMessages = [
