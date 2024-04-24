@@ -9,40 +9,43 @@ use App\Models\CharacterCardModel;
 
 class CharacterCard extends BaseController
 {
+    protected $response;
+    protected $request;
+    protected $token;
+
+    function __construct() {
+        $this->request = service('request');
+        $this->response = service('response');
+
+        $this->response->setHeader('Access-Control-Allow-Origin', '*');
+        $this->response->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        $this->response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+        $this->token = $this->request->getHeaderLine('Authorization');
+        $this->token = str_replace('Bearer ', '', $this->token);
+    }
+
     public function add()
     {
-        $request = service('request');
-        $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*');
-        $response->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-        $token = $request->getHeaderLine('Authorization');
-        $token = str_replace('Bearer ', '', $token);
-
-        $postData = $request->getPost();
+        $postData = $this->request->getPost();
 
         $characterCardModel = new CharacterCardModel();
 
-        $insertedId = $characterCardModel->addCharacterCard($postData, $token);
+        $insertedId = $characterCardModel->addCharacterCard($postData, $this->token);
 
         if ($insertedId) {
-            $response->setBody("Character card added successfully. ID: $insertedId");
-            $response->setStatusCode(200); // OK status code
+            $this->response->setBody("Character card added successfully. ID: $insertedId");
+            $this->response->setStatusCode(200);
         } else {
             log_message('error', 'dupło tutaj');
-            $response->setBody("Failed to add character card.");
-            $response->setStatusCode(500); // Internal Server Error status code
+            $this->response->setBody("Failed to add character card.");
+            $this->response->setStatusCode(507);
         }
     }
 
     public function options()
     {
-        $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*');
-        $response->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, PREFLIGHT');
-        $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        return $response;
+        return $this->response;
     }
 
     public function view($id)
@@ -52,6 +55,8 @@ class CharacterCard extends BaseController
 
     public function viewAll()
     {
-        // TODO
+        $characterCardModel = new CharacterCardModel();
+        $this->response->setBody(json_encode($characterCardModel->findAllCharacterCardsForUserId($this->token)));
+        return $this->response->setStatusCode(200);
     }
 }

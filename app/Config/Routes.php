@@ -11,5 +11,7 @@ $routes->group("api", function ($routes) {
   $routes->post("register", "Register::index");
   $routes->post("login", "Login::index");
   $routes->post("addCard", "CharacterCard::add", ['filter' => 'authFilter']);
+  $routes->post("allCards", "CharacterCard::viewAll", ['filter' => 'authFilter']);
   $routes->options('addCard', 'CharacterCard::options');
+  $routes->options('allCards', 'CharacterCard::options');
 });

@@ -37,7 +37,7 @@ class Login extends BaseController
  
         $key = getenv('JWT_SECRET');
         $iat = time(); // current timestamp value
-        $exp = $iat + 3600;
+        $exp = $iat + 3600000;
  
         $payload = array(
             "iss" => "Card Manager still in progresss",

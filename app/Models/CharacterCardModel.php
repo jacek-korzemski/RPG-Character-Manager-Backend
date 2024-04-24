@@ -70,9 +70,10 @@ class CharacterCardModel extends Model
         return $this->find($id);
     }
 
-    public function findAllCharacterCardsForUserId(int $id)
+    public function findAllCharacterCardsForUserId($token)
     {
-        return $this->where('user_id', $id)->findAll();
+        $user_id = $this->getUserIdFromToken($token);
+        return $this->where('user_id', $user_id)->findAll();
     }
 
     // Some helpers - TODO: Move it outside:
