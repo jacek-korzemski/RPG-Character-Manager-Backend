@@ -48,9 +48,13 @@ class CharacterCard extends BaseController
         return $this->response;
     }
 
-    public function view($id)
+    public function view()
     {
-        // TODO
+        $requestData = $this->request->getJSON();
+        $id = $requestData->id;
+        $characterCardModel = new CharacterCardModel();
+        $this->response->setBody(json_encode($characterCardModel->findSingleCharacterCardForUserId($id, $this->token)));
+        return $this->response->setStatusCode(200);
     }
 
     public function viewAll()
