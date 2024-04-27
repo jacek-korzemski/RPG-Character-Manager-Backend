@@ -79,7 +79,7 @@ class CharacterCardModel extends Model
     public function findSingleCharacterCardForUserId($id, $token)
     {
         $user_id = $this->getUserIdFromToken($token);
-        return $this->where('user_id', $user_id)->where('id', $id)->findAll();
+        return $this->where('user_id', $user_id)->where('id', $id)->first();
     }
 
     // Some helpers - TODO: Move it outside:
