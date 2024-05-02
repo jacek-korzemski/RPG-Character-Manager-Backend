@@ -18,7 +18,7 @@ class CharacterCard extends BaseController
         $this->response = service('response');
 
         $this->response->setHeader('Access-Control-Allow-Origin', '*');
-        $this->response->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        $this->response->setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, PUT');
         $this->response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
         $this->token = $this->request->getHeaderLine('Authorization');
@@ -41,6 +41,25 @@ class CharacterCard extends BaseController
             $this->response->setBody("Failed to add character card.");
             $this->response->setStatusCode(507);
         }
+    }
+
+    public function put()
+    {
+        $postData = $this->request->getPost();
+
+        $characterCardModel = new CharacterCardModel();
+
+        try 
+        {
+            $characterCardModel->putCharacterCard($postData, $this->token);
+        }
+        catch (Exception)
+        {
+            $this->response->setBody('Failed to update character card');
+            return $this->response->setStatusCode(507);
+        }
+        $this->response->setBody('Card updated');
+        return $this->response->setStatusCode(200);
     }
 
     public function options()

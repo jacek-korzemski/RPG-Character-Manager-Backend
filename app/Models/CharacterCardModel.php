@@ -55,14 +55,39 @@ class CharacterCardModel extends Model
 
         // Then I clear unused data to pass it further
         unset($data['name']);
-        unset($data['token']);
         unset($data['description']);
+        unset($data['token']);
 
         // The rest of the data in form should be encoded as JSON
         // and stored in db for use in frontend
         $meta['content'] = json_encode($data);
 
         return $this->insert($meta);
+    }
+
+    public function putCharacterCard(array $data, $token)
+    {
+        // Validation, passed userID has to be the same as in Token
+        // Otherwise, it means that somebody modify not owned card.
+        if ($data['user_id'] != $this->getUserIdFromToken($token)) {
+            throw new Exception('You are not allowed to do that!');
+            return false;
+        }
+
+        $meta = [];
+        $meta['id'] = $data['id'];
+        $meta['user_id'] = $data['user_id'];
+        $meta['name'] = $data['name'];
+        $meta['description'] = $data['description'];
+        
+        unset($data['name']);
+        unset($data['description']);
+        unset($data['user_id']);
+        unset($data['id']);
+        unset($data['token']);
+
+        $meta['content'] = json_encode($data);
+        return $this->where('id', $meta['id'])->set($meta)->update();
     }
 
     public function findCharacterCard(int $id)
