@@ -14,8 +14,10 @@ $routes->group("api", function ($routes) {
   $routes->post("putCard", "CharacterCard::put", ['filter' => 'authFilter']);
   $routes->post("allCards", "CharacterCard::viewAll", ['filter' => 'authFilter']);
   $routes->post("getCard", "CharacterCard::view", ['filter' => 'authFilter']);
+  $routes->post('verifyToken', 'TokenController::verify');
   $routes->options('addCard', 'CharacterCard::options');
   $routes->options('allCards', 'CharacterCard::options');
   $routes->options('getCard', 'CharacterCard::options');
   $routes->options('putCard', 'CharacterCard::options');
+  $routes->options('verifyToken', 'TokenController::options');
 });
