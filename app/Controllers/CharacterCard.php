@@ -7,6 +7,9 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 use App\Models\CharacterCardModel;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 class CharacterCard extends BaseController
 {
     protected $response;
@@ -62,6 +65,37 @@ class CharacterCard extends BaseController
         return $this->response->setStatusCode(200);
     }
 
+    public function delete()
+    {
+        $postData = $this->request->getJSON(true);
+    
+        if (!isset($postData['id'])) {
+            return $this->response->setStatusCode(400)->setBody('Card ID is required.');
+        }
+    
+        $id = $postData['id'];
+    
+        $characterCardModel = new CharacterCardModel();
+    
+        $card = $characterCardModel->findCharacterCard($id);
+    
+        if (!$card) {
+            return $this->response->setStatusCode(404)->setBody('Card not found.');
+        }
+    
+        $userIdFromToken = $this->getUserIdFromToken($this->token);
+    
+        if ($card->user_id != $userIdFromToken) {
+            return $this->response->setStatusCode(403)->setBody('Unauthorized action.');
+        }
+    
+        if ($characterCardModel->deleteCharacterCard($id)) {
+            return $this->response->setStatusCode(200)->setBody('Card deleted successfully.');
+        } else {
+            return $this->response->setStatusCode(500)->setBody('Failed to delete card.');
+        }
+    }
+
     public function options()
     {
         return $this->response;
@@ -81,5 +115,13 @@ class CharacterCard extends BaseController
         $characterCardModel = new CharacterCardModel();
         $this->response->setBody(json_encode($characterCardModel->findAllCharacterCardsForUserId($this->token)));
         return $this->response->setStatusCode(200);
+    }
+
+    // TODO: Remove the duplicate from CharacterCardModel
+    protected function getUserIdFromToken($token)
+    {
+        $key = getenv('JWT_SECRET');
+        $decoded = JWT::decode($token, new Key($key, 'HS256'));
+        return $decoded->user_id;
     }
 }

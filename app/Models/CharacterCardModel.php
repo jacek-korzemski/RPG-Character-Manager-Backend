@@ -95,6 +95,11 @@ class CharacterCardModel extends Model
         return $this->find($id);
     }
 
+    public function deleteCharacterCard($id)
+    {
+        return $this->delete($id);
+    }
+
     public function findAllCharacterCardsForUserId($token)
     {
         $user_id = $this->getUserIdFromToken($token);
@@ -107,7 +112,6 @@ class CharacterCardModel extends Model
         return $this->where('user_id', $user_id)->where('id', $id)->first();
     }
 
-    // Some helpers - TODO: Move it outside:
     protected function getUserIdFromToken($token)
     {
         $key = getenv('JWT_SECRET');
